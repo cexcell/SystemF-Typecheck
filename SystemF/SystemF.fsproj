@@ -49,8 +49,12 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
-    <Compile Include="Typechecker.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="src\Typechecker.fs">
+      <Link>Typechecker.fs</Link>
+    </Compile>
+    <Compile Include="src\Program.fs">
+      <Link>Program.fs</Link>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
