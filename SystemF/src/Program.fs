@@ -5,9 +5,16 @@ open System
 
 [<EntryPoint>]
 let main argv = 
-    let type1 = ArrowType(TVar("x"), TVar("y"));
-    let type2 = ArrowType(TVar("x"), TVar("y"));
-    let result = isEqual(type1, type2)
-    printfn "%A" result
+    let type1 = TVar("int") |-> TVar("x") //int->x
+    let type2 = TVar("int") |-> TVar("y") //int->y
+    let type3 = TVar("int") |-> TVar("y") //int->y
+    let type4 = ForAll("x", type1) //Vx. int -> x
+    let type5 = ForAll("y", type3) //Vy. int -> y
+
+    assert((type1 =? type2) = false)
+    assert((type2 =? type3) = true)
+    assert((type4 =? type5) = true)
+
+    printfn "Sucess"
     Console.ReadKey() |> ignore
     0
