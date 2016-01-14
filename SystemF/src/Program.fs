@@ -14,7 +14,7 @@ let main argv =
     assert((type1 =? type2) = false)
     assert((type2 =? type3) = true)
     assert((type4 =? type5) = true)
-
-    printfn "Sucess"
+    
+    printfn "Success"
     Console.ReadKey() |> ignore
     0
