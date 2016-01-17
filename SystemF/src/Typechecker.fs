@@ -84,7 +84,7 @@
         fun variable context -> 
             match context with
             | head::tail -> match head with
-                            | ExpressionAbstraction(eVar, t) -> if (eVar = variable) then Some t else None
+                            | ExpressionAbstraction(eVar, t) -> if (eVar = variable) then Some t else getFromContext variable tail
                             | TypeAbstraction(_) -> getFromContext variable tail
             | [] -> None
 
@@ -122,20 +122,21 @@
                     | ApplTermTerm(e1, e2) -> 
                         let t1 = helper e1 ctx
                         let t2 = helper e2 ctx
-                        let throwError = raise(TypeError("Term <" + e1.ToString() + "> cannot be applied to term <" + e2.ToString() + ">"))
                         match t1 with
                             | ArrowType(left, right) -> if (left =? t2)
                                                         then right 
-                                                        else throwError
-                            | _ -> throwError
+                                                        else raise(TypeError("Term <" + e1.ToString() + "> cannot be applied to term <" + e2.ToString() + ">"))
+                            | _ -> raise(TypeError("Term <" + e1.ToString() + "> cannot be applied to term <" + e2.ToString() + ">"))
                     | ApplTypeTerm(e, t) ->
                         let expressionType = helper e ctx
-                        let throwError = raise(TypeError("Type <" + t.ToString() + "> cannot be applied to tern <" + e.ToString() + ">"))
                         match expressionType with
                             | ForAll(typeVar, t1) -> substitution typeVar t t1
-                            | _ -> throwError
+                            | _ -> raise(TypeError("Type <" + t.ToString() + "> cannot be applied to tern <" + e.ToString() + ">"))
 
-    let typeDeduce: Expression -> Type = 
+    let typeInferenceCtx: Context -> Expression -> Type = 
+        fun context expression -> helper expression context
+    
+    let typeInference: Expression -> Type = 
         fun expression ->
             let context = initContext
             helper expression context
