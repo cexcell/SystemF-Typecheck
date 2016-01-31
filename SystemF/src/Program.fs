@@ -36,17 +36,33 @@ let main argv =
     let True = TAbstraction("a", Abstraction("x", TVar("a"), Abstraction("y", TVar("a"), EVar "x")))
     let False = TAbstraction("a", Abstraction("x", TVar("a"), Abstraction("y", TVar("a"), EVar "y")))
 
+    //self application
+    let X = TVar "X"
+    let f = EVar "f"
+    let bot = ForAll("X", X)
+
+    let quadSA = Abstraction("f", bot, ((f @<> (bot |-> (bot |-> bot))) @>> f)
+                                                     @>>
+                                                     ((f @<> (bot |-> bot)) @>> f))
+    
+    let tripleSA = Abstraction("f", bot, ((f @<> (bot |-> (bot |-> bot))) @>> f) @>> f)
+    
+    printfn "%A" ((natTypeInference quadSA).ToString())
+    printfn "%A" ((natTypeInference tripleSA).ToString())
+
     try
         //nat tests
         let succTest = Nat =? (natTypeInference (succ @>> (succ @>> zero)))
         let idTest = (Nat |-> Nat) =? (natTypeInference id)
         let polymorphIdTest = ((ForAll("A", TVar "A" |-> TVar "A")) =? (natTypeInference polymorphId))
         let complexNatTest = ((Nat |-> Nat) |-> (Nat |-> Nat) =? (natTypeInference veryComplexNatFunction))
+        let natIdTest = (natTypeInference (polymorphId @<> Nat)) =? (natTypeInference id)
 
         assert(succTest)
         assert(idTest)
         assert(polymorphIdTest)
         assert(complexNatTest)
+        assert(natIdTest)
 
         // bool tests
         let expr = (((EVar "x") @<> (TVar "X")) @>> (EVar "F")) @>> (EVar "T")
